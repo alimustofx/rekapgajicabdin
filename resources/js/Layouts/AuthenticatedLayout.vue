@@ -1,198 +1,474 @@
 <script setup>
 import { ref } from 'vue';
-import ApplicationLogo from '@/Components/ApplicationLogo.vue';
+import { usePage } from '@inertiajs/vue3';
+
+import SidebarLink from '@/Components/SidebarLink.vue';
+import NotificationBell from '@/Components/NotificationBell.vue';
 import Dropdown from '@/Components/Dropdown.vue';
 import DropdownLink from '@/Components/DropdownLink.vue';
-import NavLink from '@/Components/NavLink.vue';
-import ResponsiveNavLink from '@/Components/ResponsiveNavLink.vue';
-import { Link } from '@inertiajs/vue3';
 
-const showingNavigationDropdown = ref(false);
+const page = usePage();
+const user = page.props.auth.user;
+
+const isAdmin = user.role !== 'OPERATOR';
+
+const collapsed = ref(
+    localStorage.getItem('sidebar_collapsed') === '1'
+);
+
+function toggleCollapse() {
+    collapsed.value = !collapsed.value;
+
+    localStorage.setItem(
+        'sidebar_collapsed',
+        collapsed.value ? '1' : '0'
+    );
+}
+
+const mobileOpen = ref(false);
 </script>
 
 <template>
-    <div>
-        <div class="min-h-screen bg-gray-100">
-            <nav
-                class="border-b border-gray-100 bg-white"
+    <div class="min-h-screen bg-slate-50 flex">
+
+        <!-- Mobile Overlay -->
+        <div
+            v-if="mobileOpen"
+            @click="mobileOpen = false"
+            class="fixed inset-0 bg-black/30 z-30 md:hidden"
+        ></div>
+
+        <!-- SIDEBAR -->
+        <aside
+            class="bg-white border-r border-slate-200 flex flex-col fixed md:static inset-y-0 left-0 z-40 transition-all duration-200"
+            :class="[
+                collapsed
+                    ? 'md:w-[72px]'
+                    : 'md:w-[240px]',
+
+                mobileOpen
+                    ? 'w-[240px]'
+                    : 'w-0 md:w-auto overflow-hidden md:overflow-visible'
+            ]"
+        >
+
+            <!-- Sidebar Header -->
+            <div
+                class="h-[72px] flex items-center px-4 border-b border-slate-100 gap-2"
             >
-                <!-- Primary Navigation Menu -->
-                <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-                    <div class="flex h-16 justify-between">
-                        <div class="flex">
-                            <!-- Logo -->
-                            <div class="flex shrink-0 items-center">
-                                <Link :href="route('dashboard')">
-                                    <ApplicationLogo
-                                        class="block h-9 w-auto fill-current text-gray-800"
-                                    />
-                                </Link>
-                            </div>
-
-                            <!-- Navigation Links -->
-                            <div
-                                class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex"
-                            >
-                                <NavLink
-                                    :href="route('dashboard')"
-                                    :active="route().current('dashboard')"
-                                >
-                                    Dashboard
-                                </NavLink>
-                            </div>
-                        </div>
-
-                        <div class="hidden sm:ms-6 sm:flex sm:items-center">
-                            <!-- Settings Dropdown -->
-                            <div class="relative ms-3">
-                                <Dropdown align="right" width="48">
-                                    <template #trigger>
-                                        <span class="inline-flex rounded-md">
-                                            <button
-                                                type="button"
-                                                class="inline-flex items-center rounded-md border border-transparent bg-white px-3 py-2 text-sm font-medium leading-4 text-gray-500 transition duration-150 ease-in-out hover:text-gray-700 focus:outline-none"
-                                            >
-                                                {{ $page.props.auth.user.name }}
-
-                                                <svg
-                                                    class="-me-0.5 ms-2 h-4 w-4"
-                                                    xmlns="http://www.w3.org/2000/svg"
-                                                    viewBox="0 0 20 20"
-                                                    fill="currentColor"
-                                                >
-                                                    <path
-                                                        fill-rule="evenodd"
-                                                        d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
-                                                        clip-rule="evenodd"
-                                                    />
-                                                </svg>
-                                            </button>
-                                        </span>
-                                    </template>
-
-                                    <template #content>
-                                        <DropdownLink
-                                            :href="route('profile.edit')"
-                                        >
-                                            Profile
-                                        </DropdownLink>
-                                        <DropdownLink
-                                            :href="route('logout')"
-                                            method="post"
-                                            as="button"
-                                        >
-                                            Log Out
-                                        </DropdownLink>
-                                    </template>
-                                </Dropdown>
-                            </div>
-                        </div>
-
-                        <!-- Hamburger -->
-                        <div class="-me-2 flex items-center sm:hidden">
-                            <button
-                                @click="
-                                    showingNavigationDropdown =
-                                        !showingNavigationDropdown
-                                "
-                                class="inline-flex items-center justify-center rounded-md p-2 text-gray-400 transition duration-150 ease-in-out hover:bg-gray-100 hover:text-gray-500 focus:bg-gray-100 focus:text-gray-500 focus:outline-none"
-                            >
-                                <svg
-                                    class="h-6 w-6"
-                                    stroke="currentColor"
-                                    fill="none"
-                                    viewBox="0 0 24 24"
-                                >
-                                    <path
-                                        :class="{
-                                            hidden: showingNavigationDropdown,
-                                            'inline-flex':
-                                                !showingNavigationDropdown,
-                                        }"
-                                        stroke-linecap="round"
-                                        stroke-linejoin="round"
-                                        stroke-width="2"
-                                        d="M4 6h16M4 12h16M4 18h16"
-                                    />
-                                    <path
-                                        :class="{
-                                            hidden: !showingNavigationDropdown,
-                                            'inline-flex':
-                                                showingNavigationDropdown,
-                                        }"
-                                        stroke-linecap="round"
-                                        stroke-linejoin="round"
-                                        stroke-width="2"
-                                        d="M6 18L18 6M6 6l12 12"
-                                    />
-                                </svg>
-                            </button>
-                        </div>
-                    </div>
+                <div
+                    class="w-9 h-9 rounded-lg bg-blue-600 flex items-center justify-center text-white font-bold text-sm shrink-0"
+                >
+                    CD
                 </div>
 
-                <!-- Responsive Navigation Menu -->
-                <div
-                    :class="{
-                        block: showingNavigationDropdown,
-                        hidden: !showingNavigationDropdown,
-                    }"
-                    class="sm:hidden"
+                <span
+                    v-if="!collapsed"
+                    class="font-semibold text-slate-900 truncate"
                 >
-                    <div class="space-y-1 pb-3 pt-2">
-                        <ResponsiveNavLink
-                            :href="route('dashboard')"
-                            :active="route().current('dashboard')"
+                    Sistem Gaji
+                </span>
+            </div>
+
+            <!-- Navigation -->
+            <nav
+                class="flex-1 overflow-y-auto p-3 space-y-1"
+            >
+
+                <!-- Dashboard -->
+                <SidebarLink
+                    :href="route('dashboard')"
+                    :active="route().current('dashboard')"
+                    :collapsed="collapsed"
+                >
+                    <template #icon>
+                        <svg
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-width="2"
                         >
-                            Dashboard
-                        </ResponsiveNavLink>
-                    </div>
+                            <path
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                d="M3 12l9-9 9 9M5 10v10h5v-6h4v6h5V10"
+                            />
+                        </svg>
+                    </template>
 
-                    <!-- Responsive Settings Options -->
-                    <div
-                        class="border-t border-gray-200 pb-1 pt-4"
+                    Dashboard
+                </SidebarLink>
+
+                <!-- Payroll Operator -->
+                <SidebarLink
+                    v-if="user.role === 'OPERATOR'"
+                    :href="route('payroll.show')"
+                    :active="route().current('payroll.show')"
+                    :collapsed="collapsed"
+                >
+                    <template #icon>
+                        <svg
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-width="2"
+                        >
+                            <path
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                d="M3 6h18M3 12h18M3 18h18"
+                            />
+                        </svg>
+                    </template>
+
+                    Payroll
+                </SidebarLink>
+
+                <!-- ADMIN MENU -->
+                <template v-if="isAdmin">
+
+                    <!-- Data Master -->
+                    <p
+                        v-if="!collapsed"
+                        class="text-[11px] font-semibold text-slate-400 uppercase px-3 pt-4 pb-1"
                     >
-                        <div class="px-4">
-                            <div
-                                class="text-base font-medium text-gray-800"
-                            >
-                                {{ $page.props.auth.user.name }}
-                            </div>
-                            <div class="text-sm font-medium text-gray-500">
-                                {{ $page.props.auth.user.email }}
-                            </div>
-                        </div>
+                        Data Master
+                    </p>
 
-                        <div class="mt-3 space-y-1">
-                            <ResponsiveNavLink :href="route('profile.edit')">
-                                Profile
-                            </ResponsiveNavLink>
-                            <ResponsiveNavLink
+                    <!-- Master Sekolah -->
+                    <SidebarLink
+                        :href="route('schools.index')"
+                        :active="route().current('schools.index')"
+                        :collapsed="collapsed"
+                    >
+                        <template #icon>
+                            <svg
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-width="2"
+                            >
+                                <path
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                    d="M4 21V7l8-4 8 4v14M9 21v-6h6v6"
+                                />
+                            </svg>
+                        </template>
+
+                        Master Sekolah
+                    </SidebarLink>
+
+                    <!-- Periode -->
+                    <SidebarLink
+                        :href="route('periods.index')"
+                        :active="route().current('periods.index')"
+                        :collapsed="collapsed"
+                    >
+                        <template #icon>
+                            <svg
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-width="2"
+                            >
+                                <path
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                    d="M8 7V3m8 4V3M4 11h16M5 5h14a1 1 0 011 1v13a1 1 0 01-1 1H5a1 1 0 01-1-1V6a1 1 0 011-1z"
+                                />
+                            </svg>
+                        </template>
+
+                        Periode
+                    </SidebarLink>
+
+                    <!-- User -->
+                    <SidebarLink
+                        :href="route('users.index')"
+                        :active="route().current('users.index')"
+                        :collapsed="collapsed"
+                    >
+                        <template #icon>
+                            <svg
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-width="2"
+                            >
+                                <path
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                    d="M17 20h5v-2a4 4 0 00-3-3.87M9 20H4v-2a4 4 0 013-3.87m5-5.13a4 4 0 100-8 4 4 0 000 8zm6 4a4 4 0 00-3-3.87"
+                                />
+                            </svg>
+                        </template>
+
+                        User
+                    </SidebarLink>
+
+                    <!-- Proses Gaji -->
+                    <p
+                        v-if="!collapsed"
+                        class="text-[11px] font-semibold text-slate-400 uppercase px-3 pt-4 pb-1"
+                    >
+                        Proses Gaji
+                    </p>
+
+                    <!-- Import Gaji -->
+                    <SidebarLink
+                        :href="route('imports.index')"
+                        :active="route().current('imports.index')"
+                        :collapsed="collapsed"
+                    >
+                        <template #icon>
+                            <svg
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-width="2"
+                            >
+                                <path
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                    d="M12 16V4m0 0L7 9m5-5l5 5M4 16v3a1 1 0 001 1h14a1 1 0 001-1v-3"
+                                />
+                            </svg>
+                        </template>
+
+                        Import Gaji
+                    </SidebarLink>
+
+                    <!-- Pencocokan Manual -->
+                    <SidebarLink
+                        :href="route('unmatched.index')"
+                        :active="route().current('unmatched.index')"
+                        :collapsed="collapsed"
+                    >
+                        <template #icon>
+                            <svg
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-width="2"
+                            >
+                                <path
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                    d="M9 12l2 2 4-4M4 6h16M4 18h16"
+                                />
+                            </svg>
+                        </template>
+
+                        Pencocokan Manual
+                    </SidebarLink>
+
+                    <!-- Perbaikan -->
+                    <SidebarLink
+                        :href="route('revisions.index')"
+                        :active="route().current('revisions.index')"
+                        :collapsed="collapsed"
+                        :badge="page.props.openRevisionsCount"
+                    >
+                        <template #icon>
+                            <svg
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-width="2"
+                            >
+                                <path
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                    d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.4-9.4a2 2 0 112.8 2.8L11 17H8v-3l8.6-8.6z"
+                                />
+                            </svg>
+                        </template>
+
+                        Perbaikan
+                    </SidebarLink>
+
+                    <!-- Payroll & Rekap -->
+                    <p
+                        v-if="!collapsed"
+                        class="text-[11px] font-semibold text-slate-400 uppercase px-3 pt-4 pb-1"
+                    >
+                        Payroll & Rekap
+                    </p>
+
+                    <!-- Template Payroll -->
+                    <SidebarLink
+                        :href="route('payroll-templates.index')"
+                        :active="route().current('payroll-templates.index')"
+                        :collapsed="collapsed"
+                    >
+                        <template #icon>
+                            <svg
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-width="2"
+                            >
+                                <path
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                    d="M9 12h6m-6 4h6M9 8h1M5 21h14a1 1 0 001-1V6.41a1 1 0 00-.3-.7l-3.41-3.4a1 1 0 00-.7-.3H5a1 1 0 00-1 1v17a1 1 0 001 1z"
+                                />
+                            </svg>
+                        </template>
+
+                        Template Payroll
+                    </SidebarLink>
+
+                    <!-- Rekap -->
+                    <SidebarLink
+                        :href="route('rekap.index')"
+                        :active="route().current('rekap.index')"
+                        :collapsed="collapsed"
+                    >
+                        <template #icon>
+                            <svg
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-width="2"
+                            >
+                                <path
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                    d="M9 19V6m6 13V10m-11 9v-4"
+                                />
+                            </svg>
+                        </template>
+
+                        Rekap
+                    </SidebarLink>
+
+                </template>
+            </nav>
+
+            <!-- Collapse Button -->
+            <div class="p-3 border-t border-slate-100">
+                <button
+                    @click="toggleCollapse"
+                    class="hidden md:flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-slate-500 hover:bg-slate-50 w-full"
+                >
+                    <svg
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        class="w-5 h-5 shrink-0"
+                    >
+                        <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            :d="
+                                collapsed
+                                    ? 'M9 5l7 7-7 7'
+                                    : 'M15 5l-7 7 7 7'
+                            "
+                        />
+                    </svg>
+
+                    <span v-if="!collapsed">
+                        Ciutkan Menu
+                    </span>
+                </button>
+            </div>
+        </aside>
+
+        <!-- MAIN -->
+        <div class="flex-1 flex flex-col min-w-0">
+
+            <!-- Top Header -->
+            <header
+                class="h-16 bg-white border-b border-slate-200 flex items-center justify-between px-4 md:px-6 sticky top-0 z-20"
+            >
+
+                <!-- Mobile Menu -->
+                <button
+                    @click="mobileOpen = true"
+                    class="md:hidden p-2 rounded-lg hover:bg-slate-100"
+                >
+                    <svg
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        class="w-5 h-5"
+                    >
+                        <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            d="M4 6h16M4 12h16M4 18h16"
+                        />
+                    </svg>
+                </button>
+
+                <!-- Desktop Page Header -->
+                <div class="hidden md:block">
+                    <slot name="header" />
+                </div>
+
+                <!-- Right Side -->
+                <div class="flex items-center gap-2 ml-auto">
+
+                    <NotificationBell />
+
+                    <Dropdown
+                        align="right"
+                        width="48"
+                    >
+                        <template #trigger>
+                            <button
+                                class="flex items-center gap-2 px-2 py-1.5 rounded-lg hover:bg-slate-50"
+                            >
+                                <div
+                                    class="w-8 h-8 rounded-full bg-blue-50 text-blue-700 flex items-center justify-center text-xs font-semibold"
+                                >
+                                    {{ user.name.charAt(0).toUpperCase() }}
+                                </div>
+
+                                <span
+                                    class="text-sm text-slate-700 hidden sm:block"
+                                >
+                                    {{ user.name }}
+                                </span>
+                            </button>
+                        </template>
+
+                        <template #content>
+                            <DropdownLink
+                                :href="route('profile.edit')"
+                            >
+                                Profil
+                            </DropdownLink>
+
+                            <DropdownLink
                                 :href="route('logout')"
                                 method="post"
                                 as="button"
                             >
-                                Log Out
-                            </ResponsiveNavLink>
-                        </div>
-                    </div>
-                </div>
-            </nav>
-
-            <!-- Page Heading -->
-            <header
-                class="bg-white shadow"
-                v-if="$slots.header"
-            >
-                <div class="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
-                    <slot name="header" />
+                                Keluar
+                            </DropdownLink>
+                        </template>
+                    </Dropdown>
                 </div>
             </header>
 
+            <!-- Mobile Page Header -->
+            <div
+                class="md:hidden px-4 pt-4"
+            >
+                <slot name="header" />
+            </div>
+
             <!-- Page Content -->
-            <main>
+            <main class="flex-1">
                 <slot />
             </main>
+
         </div>
     </div>
 </template>
