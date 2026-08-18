@@ -23,6 +23,26 @@ class ImportController extends Controller
         ]);
     }
 
+    /**
+     * Mengambil daftar sekolah yang belum melaporkan
+     * Pengajuan Perubahan Gaji untuk periode dan tipe tertentu.
+     */
+    private function unresolvedSchools(int $periodId, string $type): array
+    {
+        $reportedSchoolIds = \App\Models\SalaryChangeSubmission::where(
+            'period_id',
+            $periodId
+        )
+            ->where('type', $type)
+            ->whereIn('status', ['SUBMITTED', 'NO_CHANGE'])
+            ->pluck('school_id');
+
+        return \App\Models\School::where('is_active', true)
+            ->whereNotIn('id', $reportedSchoolIds)
+            ->pluck('official_name')
+            ->toArray();
+    }
+
     public function store(Request $request)
     {
         $validated = $request->validate([
@@ -30,6 +50,37 @@ class ImportController extends Controller
             'type' => 'required|in:PNS,PPPK',
             'zip_file' => 'required|file|mimes:zip|max:51200',
         ]);
+
+        /*
+        |--------------------------------------------------------------------------
+        | Kunci Import
+        |--------------------------------------------------------------------------
+        |
+        | Import ZIP hanya boleh dilakukan apabila seluruh sekolah aktif
+        | sudah melaporkan Pengajuan Perubahan Gaji untuk tipe yang dipilih.
+        |
+        */
+
+        $missing = $this->unresolvedSchools(
+            $validated['period_id'],
+            $validated['type']
+        );
+
+        if (count($missing) > 0) {
+            return redirect()->back()->withErrors([
+                'zip_file' =>
+                    'Belum semua sekolah lapor Pengajuan Perubahan Gaji '
+                    . $validated['type']
+                    . ': '
+                    . implode(', ', $missing),
+            ]);
+        }
+
+        /*
+        |--------------------------------------------------------------------------
+        | Simpan ZIP
+        |--------------------------------------------------------------------------
+        */
 
         $zipPath = $request->file('zip_file')->store('imports/raw');
 
@@ -42,6 +93,12 @@ class ImportController extends Controller
             'status' => 'PROCESSING',
         ]);
 
+        /*
+        |--------------------------------------------------------------------------
+        | Proses ZIP
+        |--------------------------------------------------------------------------
+        */
+
         $matched = 0;
         $unmatched = 0;
         $total = 0;
@@ -49,16 +106,30 @@ class ImportController extends Controller
         $zip = new ZipArchive();
 
         $fullZipPath = Storage::path($zipPath);
+
         $extractFolder = 'imports/extracted/' . $import->id;
 
         if ($zip->open($fullZipPath) === true) {
-            $zip->extractTo(Storage::path($extractFolder));
+
+            $zip->extractTo(
+                Storage::path($extractFolder)
+            );
+
             $zip->close();
 
             $files = Storage::allFiles($extractFolder);
 
             foreach ($files as $filePath) {
-                $ext = strtolower(pathinfo($filePath, PATHINFO_EXTENSION));
+
+                $ext = strtolower(
+                    pathinfo($filePath, PATHINFO_EXTENSION)
+                );
+
+                /*
+                |--------------------------------------------------------------------------
+                | Hanya proses Excel
+                |--------------------------------------------------------------------------
+                */
 
                 if (!in_array($ext, ['xlsx', 'xls'])) {
                     continue;
@@ -67,7 +138,20 @@ class ImportController extends Controller
                 $total++;
 
                 $filename = basename($filePath);
+
+                /*
+                |--------------------------------------------------------------------------
+                | Matching Sekolah
+                |--------------------------------------------------------------------------
+                */
+
                 $school = SchoolMatcher::match($filename);
+
+                /*
+                |--------------------------------------------------------------------------
+                | Simpan Salary Document
+                |--------------------------------------------------------------------------
+                */
 
                 $doc = SalaryDocument::create([
                     'import_id' => $import->id,
@@ -81,7 +165,14 @@ class ImportController extends Controller
                     'uploaded_by' => $request->user()->id,
                 ]);
 
+                /*
+                |--------------------------------------------------------------------------
+                | Update Status Gaji
+                |--------------------------------------------------------------------------
+                */
+
                 if ($school) {
+
                     $matched++;
 
                     SalaryStatus::updateOrCreate(
@@ -95,15 +186,29 @@ class ImportController extends Controller
                             'current_document_id' => $doc->id,
                         ]
                     );
+
                 } else {
+
                     $unmatched++;
                 }
             }
         }
 
+        /*
+        |--------------------------------------------------------------------------
+        | Tandai Import Selesai
+        |--------------------------------------------------------------------------
+        */
+
         $import->update([
             'status' => 'DONE',
         ]);
+
+        /*
+        |--------------------------------------------------------------------------
+        | Kembali ke halaman Import
+        |--------------------------------------------------------------------------
+        */
 
         return redirect()->back()->with('summary', [
             'total' => $total,

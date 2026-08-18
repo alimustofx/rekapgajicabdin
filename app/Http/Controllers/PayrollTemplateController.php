@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\PayrollTemplate;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 
 class PayrollTemplateController extends Controller
@@ -30,6 +31,7 @@ class PayrollTemplateController extends Controller
         PayrollTemplate::create([
             'name' => $request->name,
             'file_path' => $request->file('file')->store('payroll-templates'),
+            'original_filename' => $request->file('file')->getClientOriginalName(),
             'is_active' => true,
             'created_by' => $request->user()->id,
         ]);
@@ -41,9 +43,10 @@ class PayrollTemplateController extends Controller
 
     public function download(PayrollTemplate $payrollTemplate)
     {
-        return \Illuminate\Support\Facades\Storage::download(
+        return Storage::download(
             $payrollTemplate->file_path,
-            $payrollTemplate->name
+            $payrollTemplate->original_filename
+                ?? $payrollTemplate->name . '.xlsx'
         );
     }
 }

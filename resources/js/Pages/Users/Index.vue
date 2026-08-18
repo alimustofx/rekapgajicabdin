@@ -1,6 +1,8 @@
 <script setup>
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, useForm, router } from '@inertiajs/vue3';
+import ConfirmDialog from '@/Components/ConfirmDialog.vue';
+import { ref } from 'vue';
 
 defineProps({
     users: Array,
@@ -23,10 +25,25 @@ function submit() {
     });
 }
 
+// Buka dialog konfirmasi
 function hapus(id) {
-    if (confirm('Hapus akun ini? Tindakan tidak dapat dibatalkan.')) {
-        router.delete(route('users.destroy', id));
+    deleteUserId.value = id;
+}
+
+// Jalankan penghapusan setelah user menekan "Ya, Lanjutkan"
+function doDelete() {
+    if (!deleteUserId.value) {
+        return;
     }
+
+    router.delete(
+        route('users.destroy', deleteUserId.value),
+        {
+            onFinish: () => {
+                deleteUserId.value = null;
+            },
+        }
+    );
 }
 
 const roleLabel = {
@@ -34,40 +51,27 @@ const roleLabel = {
     ADMIN_CABDIN: 'Admin Cabdin',
     SUPER_ADMIN: 'Super Admin',
 };
+
+const deleteUserId = ref(null);
 </script>
 
 <template>
     <Head title="Manajemen User" />
 
+    <ConfirmDialog
+        :show="!!deleteUserId"
+        title="Hapus Akun"
+        message="Hapus akun ini? Tindakan tidak dapat dibatalkan."
+        confirmText="Ya, Hapus"
+        @confirm="doDelete"
+        @cancel="deleteUserId = null"
+    />
     <AuthenticatedLayout>
         <template #header>
             <div class="flex items-center gap-3">
-                <div
-                    class="w-10 h-10 rounded-xl bg-blue-50 border border-blue-100 flex items-center justify-center"
-                >
-                    <svg
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        stroke-width="1.8"
-                        class="w-5 h-5 text-[#28558f]"
-                    >
-                        <path
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                            d="M16 21v-2a4 4 0 00-4-4H6a4 4 0 00-4 4v2"
-                        />
-                        <circle cx="9" cy="7" r="4" />
-                        <path
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                            d="M22 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"
-                        />
-                    </svg>
-                </div>
 
                 <div>
-                    <h2 class="text-lg font-bold text-slate-900">
+                    <h2 class="text-xl font-bold tracking-tight text-slate-900">
                         Manajemen User
                     </h2>
 

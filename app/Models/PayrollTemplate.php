@@ -9,6 +9,7 @@ class PayrollTemplate extends Model
     protected $fillable = [
         'name',
         'file_path',
+        'original_filename',
         'is_active',
         'created_by',
     ];

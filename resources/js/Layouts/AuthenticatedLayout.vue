@@ -56,17 +56,17 @@ const mobileOpen = ref(false);
             <div
                 class="h-[72px] flex items-center px-4 border-b border-slate-100 gap-2"
             >
-                <div
-                    class="w-9 h-9 rounded-lg bg-blue-600 flex items-center justify-center text-white font-bold text-sm shrink-0"
-                >
-                    CD
-                </div>
+                <img
+                    src="/images/logo-jatim.png"
+                    alt="Logo Jawa Timur"
+                    class="w-9 h-9 object-contain shrink-0"
+                />
 
                 <span
                     v-if="!collapsed"
                     class="font-semibold text-slate-900 truncate"
                 >
-                    Sistem Gaji
+                    Monitoring Gaji
                 </span>
             </div>
 
@@ -122,6 +122,41 @@ const mobileOpen = ref(false);
                     </template>
 
                     Payroll
+                </SidebarLink>
+
+                <!-- Perubahan Gaji Operator -->
+                <SidebarLink
+                    v-if="user.role === 'OPERATOR'"
+                    :href="route('change-submissions.index')"
+                    :active="route().current('change-submissions.*')"
+                    :collapsed="collapsed"
+                >
+                    <template #icon>
+                        <svg
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-width="2"
+                        >
+                            <path
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2"
+                            />
+                            <path
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                d="M9 5a3 3 0 006 0"
+                            />
+                            <path
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                d="M9 13h6M9 17h4"
+                            />
+                        </svg>
+                    </template>
+
+                    Perubahan Gaji
                 </SidebarLink>
 
                 <!-- ADMIN MENU -->
@@ -214,6 +249,30 @@ const mobileOpen = ref(false);
                     >
                         Proses Gaji
                     </p>
+
+                    <!-- Pengajuan Perubahan -->
+                    <SidebarLink
+                        :href="route('admin-changes.index')"
+                        :active="route().current('admin-changes.*')"
+                        :collapsed="collapsed"
+                    >
+                        <template #icon>
+                            <svg
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-width="2"
+                            >
+                                <path
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                    d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"
+                                />
+                            </svg>
+                        </template>
+
+                        Pengajuan Perubahan
+                    </SidebarLink>
 
                     <!-- Import Gaji -->
                     <SidebarLink

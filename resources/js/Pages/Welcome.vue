@@ -16,40 +16,23 @@ import { Head, Link } from '@inertiajs/vue3';
             >
                 <!-- Brand -->
                 <div class="flex items-center gap-3">
-                    <div
-                        class="w-11 h-11 rounded-xl bg-slate-800 flex items-center justify-center shrink-0"
-                    >
-                        <svg
-                            viewBox="0 0 40 40"
-                            fill="none"
-                            class="w-8 h-8"
-                        >
-                            <path
-                                d="M20 4L7 11.5V28.5L20 36L33 28.5V11.5L20 4Z"
-                                stroke="white"
-                                stroke-width="3"
-                                stroke-linejoin="round"
-                            />
-                            <path
-                                d="M20 4V20M20 20L7 27.5M20 20L33 12.5"
-                                stroke="white"
-                                stroke-width="3"
-                                stroke-linejoin="round"
-                            />
-                        </svg>
-                    </div>
+                    <img
+                        src="/images/logo-jatim.png"
+                        alt="Logo Jawa Timur"
+                        class="w-10 h-10 object-contain"
+                    />
 
                     <div class="leading-tight">
                         <div
                             class="font-bold text-slate-950 text-base sm:text-lg"
                         >
-                            Sistem Monitoring Gaji Cabdin
+                            Sistem Monitoring Gaji
                         </div>
 
                         <div
                             class="hidden sm:block text-xs text-slate-500 mt-0.5"
                         >
-                            Cabang Dinas Pendidikan
+                            Cabang Dinas Pendidikan Wilayah Kabupaten Malang
                         </div>
                     </div>
                 </div>
@@ -165,25 +148,11 @@ import { Head, Link } from '@inertiajs/vue3';
                                 >
                                     <div class="flex items-center gap-2">
                                         <div
-                                            class="w-7 h-7 rounded-lg bg-[#172c48] flex items-center justify-center"
+                                            class="w-3 h-3 rounded-lg bg-[#172c48] flex items-center justify-center"
                                         >
-                                            <svg
-                                                viewBox="0 0 40 40"
-                                                fill="none"
-                                                class="w-5 h-5"
-                                            >
-                                                <path
-                                                    d="M20 4L7 11.5V28.5L20 36L33 28.5V11.5L20 4Z"
-                                                    stroke="white"
-                                                    stroke-width="3"
-                                                />
-
-                                                <path
-                                                    d="M20 4V20M20 20L7 27.5M20 20L33 12.5"
-                                                    stroke="white"
-                                                    stroke-width="3"
-                                                />
-                                            </svg>
+                                            <span
+                                                class="w-1.5 h-1.5 rounded-full bg-white"
+                                            ></span>
                                         </div>
 
                                         <span
@@ -913,7 +882,7 @@ import { Head, Link } from '@inertiajs/vue3';
                             class="mt-2 text-sm leading-5 text-slate-600"
                         >
                             Mempermudah operator memeriksa rekap gaji PNS dan
-                            PPPK sebelum data dinyatakan FIX dan diproses ke
+                            PPPK sebelum data dinyatakan sesuai dan diproses ke
                             tahap payroll.
                         </p>
                     </div>
@@ -993,7 +962,7 @@ import { Head, Link } from '@inertiajs/vue3';
                         <p
                             class="mt-2 text-sm leading-5 text-slate-600"
                         >
-                            Setelah data PNS dan PPPK dinyatakan FIX, operator
+                            Setelah data PNS dan PPPK dinyatakan sesuai, operator
                             mengirim payroll untuk kemudian diperiksa dan
                             disetujui oleh Cabang Dinas.
                         </p>
@@ -1017,35 +986,20 @@ import { Head, Link } from '@inertiajs/vue3';
                             <!-- Brand -->
                             <div class="flex items-center gap-3">
                                 <div class="flex h-10 w-10 items-center justify-center">
-                                    <svg
-                                        viewBox="0 0 40 40"
-                                        fill="none"
-                                        class="h-9 w-9"
-                                        aria-hidden="true"
-                                    >
-                                        <path
-                                            d="M20 4L7 11.5V28.5L20 36L33 28.5V11.5L20 4Z"
-                                            stroke="currentColor"
-                                            stroke-width="2.5"
-                                            stroke-linejoin="round"
-                                        />
-
-                                        <path
-                                            d="M20 4V20M20 20L7 27.5M20 20L33 12.5"
-                                            stroke="currentColor"
-                                            stroke-width="2.5"
-                                            stroke-linejoin="round"
-                                        />
-                                    </svg>
+                                    <img
+                                        src="/images/logo-jatim.png"
+                                        alt="Logo Jawa Timur"
+                                        class="w-10 h-10 object-contain"
+                                    />
                                 </div>
 
                                 <div class="leading-tight">
                                     <p class="text-sm font-medium text-slate-300">
-                                        Sistem Monitoring
+                                        Sistem Monitoring Gaji
                                     </p>
 
                                     <p class="text-base font-bold">
-                                        Gaji Cabdin
+                                        Cabdin Pendidikan Kab. Malang
                                     </p>
                                 </div>
                             </div>

@@ -153,6 +153,52 @@ function submit() {
 
 
                 <!-- Main Grid -->
+                <!-- Validation Error -->
+                <div
+                    v-if="page.props.errors.zip_file"
+                    class="mb-6 rounded-2xl border border-red-200 bg-red-50 p-4 shadow-sm"
+                >
+                    <div class="flex items-start gap-3">
+                        <div
+                            class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-red-100"
+                        >
+                            <svg
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-width="1.8"
+                                class="h-5 w-5 text-red-600"
+                            >
+                                <path
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                    d="M12 9v4"
+                                />
+                                <path
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                    d="M12 17h.01"
+                                />
+                                <path
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                    d="M10.3 4.7L2.8 18a2 2 0 001.7 3h15a2 2 0 001.7-3L13.7 4.7a2 2 0 00-3.4 0z"
+                                />
+                            </svg>
+                        </div>
+
+                        <div class="min-w-0">
+                            <h3 class="text-sm font-bold text-red-900">
+                                Import belum dapat diproses
+                            </h3>
+
+                            <p class="mt-1 text-sm leading-6 text-red-700">
+                                {{ page.props.errors.zip_file }}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <!-- End Validation Error -->
                 <div class="grid grid-cols-1 lg:grid-cols-5 gap-6">
 
                     <!-- Form -->

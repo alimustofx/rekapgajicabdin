@@ -57,6 +57,7 @@ class PayrollController extends Controller
             'status' => 'UPLOADED',
             'current_file_id' => $file->id,
             'uploaded_at' => now(),
+            'revision_notes' => null,
         ]);
         NotificationService::send(
             NotificationService::admins(),

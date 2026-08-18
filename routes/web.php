@@ -101,6 +101,26 @@ Route::middleware('auth')->group(function () {
     Route::get('/template-payroll/{payrollTemplate}/download', [PayrollTemplateController::class, 'download'])
         ->name('payroll-templates.download');
 
+        
+    /*
+    |--------------------------------------------------------------------------
+    | Perubahan Gaji Operator
+    |--------------------------------------------------------------------------
+    */
+
+    Route::get('/perubahan-gaji', [App\Http\Controllers\SalaryChangeController::class, 'index'])
+        ->name('change-submissions.index');
+
+    Route::get('/perubahan-gaji/{type}/buat', [App\Http\Controllers\SalaryChangeController::class, 'create'])
+        ->name('change-submissions.create');
+
+    Route::post('/perubahan-gaji/{type}/tidak-ada', [App\Http\Controllers\SalaryChangeController::class, 'noChange'])
+        ->name('change-submissions.no-change');
+
+    Route::post('/perubahan-gaji/{type}', [App\Http\Controllers\SalaryChangeController::class, 'store'])
+        ->name('change-submissions.store');
+
+
     /*
     |--------------------------------------------------------------------------
     | Notifikasi
@@ -204,6 +224,37 @@ Route::middleware(['auth', 'admin'])->group(function () {
 
     Route::post('/perbaikan/{revisionRequest}/resolve', [RevisionController::class, 'resolve'])
         ->name('revisions.resolve');
+    
+    /*
+    |--------------------------------------------------------------------------
+    | Perubahan Gaji Admin
+    |--------------------------------------------------------------------------
+    */
+
+    Route::get(
+        '/admin/perubahan-gaji',
+        [App\Http\Controllers\AdminChangeController::class, 'index']
+    )->name('admin-changes.index');
+
+    Route::get(
+        '/admin/perubahan-gaji/export', 
+        [App\Http\Controllers\AdminChangeController::class, 'export']
+    )->name('admin-changes.export');
+
+    Route::get(
+        '/admin/perubahan-gaji/{submission}',
+        [App\Http\Controllers\AdminChangeController::class, 'show']
+    )->name('admin-changes.show');
+
+    Route::post(
+        '/admin/perubahan-gaji/{submission}/proses',
+        [App\Http\Controllers\AdminChangeController::class, 'process']
+    )->name('admin-changes.process');
+
+    Route::get(
+        '/admin/perubahan-gaji-item/{item}/download',
+        [App\Http\Controllers\AdminChangeController::class, 'downloadItem']
+    )->name('admin-changes.item.download');
 
     /*
     |--------------------------------------------------------------------------

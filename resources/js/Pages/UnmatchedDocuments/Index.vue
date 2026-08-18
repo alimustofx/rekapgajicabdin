@@ -2,6 +2,7 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, router } from '@inertiajs/vue3';
 import { ref } from 'vue';
+import ConfirmDialog from '@/Components/ConfirmDialog.vue';
 
 defineProps({
     documents: Array,
@@ -10,9 +11,15 @@ defineProps({
 
 const selected = ref({});
 
+const ignoreDocumentId = ref(null);
+
+// State untuk notifikasi validasi
+const showSchoolNotification = ref(false);
+
 function assign(docId) {
     if (!selected.value[docId]) {
-        return alert('Pilih sekolah dulu.');
+        showSchoolNotification.value = true;
+        return;
     }
 
     router.post(
@@ -23,14 +30,16 @@ function assign(docId) {
     );
 }
 
-function ignore(docId) {
-    if (
-        confirm(
-            'Abaikan file ini? File dianggap bukan milik sekolah manapun.'
-        )
-    ) {
-        router.post(route('unmatched.ignore', docId));
-    }
+function ignore(id) {
+    ignoreDocumentId.value = id;
+}
+
+function doIgnore() {
+    router.post(
+        route('unmatched-documents.ignore', ignoreDocumentId.value)
+    );
+
+    ignoreDocumentId.value = null;
 }
 </script>
 
@@ -465,5 +474,21 @@ function ignore(docId) {
 
             </div>
         </div>
+        <ConfirmDialog
+            :show="!!ignoreDocumentId"
+            title="Abaikan Dokumen"
+            message="Apakah Anda yakin ingin mengabaikan dokumen ini?"
+            confirmText="Ya, Abaikan"
+            @confirm="doIgnore"
+            @cancel="ignoreDocumentId = null"
+        />
+        <ConfirmDialog
+            :show="showSchoolNotification"
+            title="Sekolah Belum Dipilih"
+            message="Silakan pilih sekolah tujuan terlebih dahulu sebelum melakukan pencocokan dokumen."
+            confirmText="Mengerti"
+            @confirm="showSchoolNotification = false"
+            @cancel="showSchoolNotification = false"
+        />
     </AuthenticatedLayout>
 </template>

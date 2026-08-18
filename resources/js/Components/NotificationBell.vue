@@ -1,9 +1,24 @@
 <script setup>
 import { usePage, router } from '@inertiajs/vue3';
-import { ref } from 'vue';
+import { ref, onMounted, onUnmounted } from 'vue';
 
 const page = usePage();
 const open = ref(false);
+const root = ref(null);
+
+function handleClickOutside(e) {
+    if (root.value && !root.value.contains(e.target)) {
+        open.value = false;
+    }
+}
+
+onMounted(() => {
+    document.addEventListener('click', handleClickOutside);
+});
+
+onUnmounted(() => {
+    document.removeEventListener('click', handleClickOutside);
+});
 
 function toggle() {
     open.value = !open.value;
@@ -21,7 +36,7 @@ function bacaSemua() {
 </script>
 
 <template>
-    <div class="relative">
+    <div class="relative" ref="root">
         <!-- Notification Button -->
         <button
             @click="toggle"

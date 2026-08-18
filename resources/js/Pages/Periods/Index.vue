@@ -28,36 +28,9 @@ function toggle(id) {
     <AuthenticatedLayout>
         <template #header>
             <div class="flex items-center gap-3">
-                <div
-                    class="w-10 h-10 rounded-xl bg-blue-50 border border-blue-100 flex items-center justify-center"
-                >
-                    <svg
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        stroke-width="1.8"
-                        class="w-5 h-5 text-[#28558f]"
-                    >
-                        <rect
-                            x="3"
-                            y="4"
-                            width="18"
-                            height="17"
-                            rx="2"
-                        />
-                        <path
-                            stroke-linecap="round"
-                            d="M16 2v4M8 2v4M3 9h18"
-                        />
-                        <path
-                            stroke-linecap="round"
-                            d="M8 13h3M8 17h2M14 13h2M14 17h2"
-                        />
-                    </svg>
-                </div>
 
                 <div>
-                    <h2 class="text-lg font-bold text-slate-900">
+                    <h2 class="text-xl font-bold tracking-tight text-slate-900">
                         Periode Gaji
                     </h2>
 

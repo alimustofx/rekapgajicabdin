@@ -1,6 +1,7 @@
 <script setup>
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, useForm } from '@inertiajs/vue3';
+import ConfirmDialog from '@/Components/ConfirmDialog.vue';
 import { ref } from 'vue';
 
 const props = defineProps({
@@ -9,6 +10,7 @@ const props = defineProps({
 });
 
 const showModal = ref(false);
+const confirmFix = ref(false);
 
 const revisionForm = useForm({
     category: 'Tunjangan Anak',
@@ -16,11 +18,18 @@ const revisionForm = useForm({
 });
 
 function submitFix() {
-    if (confirm('Konfirmasi dokumen ini sudah benar?')) {
-        useForm({}).post(
-            route('documents.fix', props.document.id)
-        );
-    }
+    confirmFix.value = true;
+}
+
+function doFix() {
+    useForm({}).post(
+        route('documents.fix', props.document.id),
+        {
+            onSuccess: () => {
+                confirmFix.value = false;
+            },
+        }
+    );
 }
 
 function submitRevision() {
@@ -514,5 +523,13 @@ function submitRevision() {
                 </div>
             </div>
         </div>
+        <ConfirmDialog
+            :show="confirmFix"
+            title="Konfirmasi FIX"
+            message="Apakah Anda yakin dokumen ini sudah benar dan dapat dikonfirmasi sebagai FIX?"
+            confirmText="Ya, Konfirmasi FIX"
+            @confirm="doFix"
+            @cancel="confirmFix = false"
+        />
     </AuthenticatedLayout>
 </template>

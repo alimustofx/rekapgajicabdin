@@ -74,7 +74,12 @@ class RekapController extends Controller
             'status' => 'APPROVED',
             'approved_at' => now(),
             'approved_by' => $request->user()->id,
+            'revision_notes' => null,
         ]);
+
+        return redirect()
+            ->back()
+            ->with('success', 'Payroll disetujui.');
 
         NotificationService::send(
             NotificationService::operatorsOfSchool($payroll->school_id),
